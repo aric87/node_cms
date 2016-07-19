@@ -7,7 +7,7 @@
     "test": "server/tests"
   },
   "scripts": {
-    "test": "./scripts/run_mongod.sh && mocha server/tests/test.js"
+    "test": "mocha server/tests/test.js"
   },
   "author": "Aric Johnson && Robert Wilson",
   "license": "ISC",
