@@ -1,0 +1,9 @@
+{% macro content(image, heading,text) %}
+<div class="featurette" id="{% filter replace(' ','', 'g') %}{{content.heading}}{% endfilter %}">
+    {% if image %}
+    <img class="featurette-image img-circle img-responsive pull-right" src="http://placehold.it/500x500">
+    {% endif %}
+    <h2 class="featurette-heading">{{heading}}</h2>
+    <p class="lead">{{text}}</p>
+</div>
+{% endmacro %}

@@ -13,15 +13,19 @@ const jsonParser = bodyParser.json();
 const session  = require('express-session');
 const models = require('./models/models');
 const swig = require('swig');
-// set up our express application
+const fs = require('fs');
+const path = require('path');// set up our express application
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
-
+if (process.env.OPENSHIFT_NODEJS_PORT){
+	var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
+}
 // setup the logger
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
-app.use(morgan('combined', {stream: accessLogStream}))app.use(cookieParser()); // read cookies (needed for auth)
+app.set('views', __dirname + '/client');
+app.use(morgan('combined', {stream: accessLogStream}));
+app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // get information from html forms
 // required for passport
@@ -30,10 +34,10 @@ app.use(session({ secret: 'cmsApp', cookie: { maxAge: 360000 }, resave: true, sa
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
-app.use(express.static('./client'));
+app.use(express.static(__dirname + '/client'));
 
 // routes ======================================================================
-
+require('./routes/content')(app, models)
 // launch ======================================================================
 app.listen(port,app_ip_address, (err) => {
     if(err) console.log(err)
