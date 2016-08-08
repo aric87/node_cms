@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% import 'macro.html' as things %}
+
+{% block title %}client.name{% endblock %}
+{% block content %}
+{% for item in content %}
+	{{ things.content(item.img, item.heading, item.content) }}
+{% endfor %}
+{% endblock %}
