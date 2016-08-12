@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const clientSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    host:String,
     address: { type: String },
     city: { type: String },
     state: { type: String },

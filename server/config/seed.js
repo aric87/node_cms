@@ -4,6 +4,7 @@ var Models = require('../models/models');
 exports.run = (callback, errback) => {
 	Models.Client.create({
 		name: 'Test Client',
+		host:'localhost',
 	    address: '123 four street',
 	    city: 'NY',
 	    state: 'NY',
@@ -20,6 +21,11 @@ exports.run = (callback, errback) => {
 	Models.Insert.create({
 		content: 'test teset atohadf;nadlkadfgldf;lksdfg;lsfdg;l',
 		page: 'index',
+		active: true,
+		client: items.id
+	},{
+		content: 'test adfgj tesetosjg;lk contetdcttaf adfgldf;lksdfg;lsfdg;l',
+		page: 'contact',
 		active: true,
 		client: items.id
 	},function(err){

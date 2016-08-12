@@ -36,8 +36,10 @@ app.use(passport.session()); // persistent login sessions
 
 app.use(express.static(__dirname + '/client'));
 
+//services
+const services = require('./services/services')(models)
 // routes ======================================================================
-require('./routes/content')(app, models)
+require('./routes/content')(app, models, services)
 // launch ======================================================================
 app.listen(port,app_ip_address, (err) => {
     if(err) console.log(err)
