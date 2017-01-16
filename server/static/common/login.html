@@ -1,7 +1,5 @@
-{% extends 'layoutPrivate.html' %}
-
-{% block content %}
-    <div class="col-sm-6 col-sm-offset-3">
+{% macro login(containerClass) %}
+    <div class="{{containerClass}}">
 
         <h1><span class="fa fa-sign-in"></span> Login</h1>
 
@@ -9,7 +7,6 @@
         {% if message.length > 0 %}
         <div class="alert alert-danger">{{ message }}</div>
         {% endif %}
-
         <!-- LOGIN FORM -->
         <form action="/login" method="post">
             <div class="form-group">
@@ -20,14 +17,10 @@
                 <label>Password</label>
                 <input type="password" class="form-control" name="password">
             </div>
-
             <button type="submit" class="btn btn-warning btn-lg">Login</button>
         </form>
-
         <hr>
-
         <p>Need an account? <a href="/signup">Signup</a></p>
         <p>Forget your password? <a href="/forgot">Reset Password</a></p>
-
     </div>
-{% endblock %}
+{% endmacro %}

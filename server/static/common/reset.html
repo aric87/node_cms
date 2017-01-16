@@ -1,8 +1,5 @@
-{% extends 'layoutPrivate.html' %}
-{% block title %}Reset Password{% endblock %}
-
-{% block content %}
-<h1>Forgot Password</h1>
+{% macro resetPassword(containerClass, title) %}
+{{title | safe}}
 <form method='POST' action="/reset/{{user.resetPasswordToken }}">
     <div class="form-group">
         <label>New Password</label>
@@ -14,4 +11,4 @@
     </div>
     <button type="submit" class="btn btn-primary btn-lg">Update Password</button>
 
-    {% endblock %}
+    {% endmacro %}

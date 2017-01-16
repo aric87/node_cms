@@ -3,8 +3,9 @@ const { isLoggedIn, emailuser } = require('../controllers/services');
 
 module.exports = function loginInit(app, passport, crypto, logger, async) {
 	app.get('/login',
-		(req, res) => res.render('common/login', {
+		(req, res) => res.render(`${req.client.clientCode}/login`, {
 			client: req.client,
+			page:'login',
 			message: req.flash('loginMessage'),
 		})
 	);
@@ -15,8 +16,9 @@ module.exports = function loginInit(app, passport, crypto, logger, async) {
 		failureFlash: true,
 	}));
 	app.get('/signup',
-		(req, res) => res.render('common/signup', {
+		(req, res) => res.render(`${req.client.clientCode}/login`, {
 			client: req.client,
+			page:'signup',
 			message: '',
 		})
 	);
@@ -59,8 +61,9 @@ module.exports = function loginInit(app, passport, crypto, logger, async) {
 		return res.redirect('/');
 	});
 	app.get('/forgot', (req, res) => {
-		res.render('common/forgot', {
+		res.render(`${req.client.clientCode}/login`, {
 			client: req.client,
+			page:'forgot',
 			user: req.user,
 		});
 	});
@@ -132,8 +135,9 @@ module.exports = function loginInit(app, passport, crypto, logger, async) {
 				return res.redirect('/forgot');
 			}
 			logger.info(`${user.email} visited the password reset page with a good token`);
-			return res.render('common/reset', {
+			return res.render(`${req.client.clientCode}/login`, {
 				client: req.client,
+				page: 'reset',
 				user,
 			});
 		});
