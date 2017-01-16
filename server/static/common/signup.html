@@ -1,0 +1,53 @@
+{% macro signup(containerClass) %}
+		<div class="{{containerClass}}">
+        <h1><span class="fa fa-sign-in"></span>{% if user %}Edit Profile {% else %} Signup {% endif %}</h1>
+        <!-- show any messages that come back with authentication -->
+        {% if message.length > 0 %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endif %}
+
+        <!-- LOGIN FORM -->
+        <form method="post" id="signupForm" enctype="multipart/form-data">
+          <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" name="name" required {% if user %} value="{{user.name}}" {% endif %}>
+          </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" class="form-control" name="email" required {% if user %} value="{{user.email}}" {% endif %}>
+            </div>
+            {% if !user %}
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control setPassword" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control confirmPassword" required >
+            </div>{% endif %}
+            <button type="submit" class="btn btn-warning btn-lg">{% if user %} Make Changes {% else %} Signup {% endif %}</button>
+        </form>
+        <hr>
+        {% if user %}
+        <form method="post" action="/forgot">
+          <input name="email" type="hidden" value="{{user.email}}" />
+          <p> If you want to change your password, click this button. NOTE: any changes to the above fields will not be saved. For security purposes, you will be emailed a link to reset the password.</p>
+            <button type="submit" class="btn btn-warning">Reset Password</button>
+        </form>
+        {% else %}
+        <p>Already have an account? <a href="/">Login</a></p>
+        {% endif %}
+				<script>
+				$(document).ready(function(){
+					$('#signupForm').submit(function(e){
+						if($(this).find('.setPassword').val() !== $(this).find('.confirmPassword').val()){
+							e.preventDefault();
+							alert('The password fields must match.')
+							$(this).find('.setPassword').val('').focus();
+							$(this).find('.confirmPassword').val('');
+						}
+					})
+				})
+				</script>
+    </div>
+{% endmacro %}

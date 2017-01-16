@@ -1,0 +1,25 @@
+{% extends '../base.html' %}
+{% import '../common/forgot.html' as forgot %}
+{% import '../common/login.html' as login %}
+{% import '../common/reset.html' as reset %}
+{% import '../common/signup.html' as signup %}
+
+{% block title %}{{client.name}} {{page}}{% endblock %}
+{% block customCssTags %}<!-- testing here -->{% endblock %}
+{% block customJsTags %}<!-- testing here -->{% endblock %}
+{% block clientPage %}
+
+{% if page == 'login' %}
+{{ login.login('col-xs-12') }}
+{% endif %}
+{% if page == 'forgot' %}
+{{ forgot.forgot('col-xs-12','<h1>Get Password Reset Email</h1>') }}
+{% endif %}
+{% if page == 'reset' %}
+{{ reset.reset('col-xs-12','<h1>Reset Your Password</h1>') }}
+{% endif %}
+{% if page == 'signup' %}
+{{ signup.signup('col-xs-12') }}
+{% endif %}
+
+{% endblock %}

@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha server/tests/test.js"
   },
-  "author": "Aric Johnson && Robert Wilson",
+  "author": "Aric Johnson",
   "license": "ISC",
   "repository": {
     "type": "git",
@@ -20,17 +20,29 @@
   },
   "homepage": "https://github.com/aric87/node_cms#readme",
   "dependencies": {
+    "async": "^2.1.4",
     "bcrypt": "^0.8.7",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
+    "connect-flash": "^0.1.1",
+    "connect-multiparty": "^2.0.0",
+    "connect-redis": "^3.2.0",
     "cookie-parser": "^1.4.3",
+    "crypto": "0.0.3",
     "express": "^4.14.0",
+    "express-limiter": "^1.6.0",
     "express-session": "^1.14.0",
     "handlebars": "^4.0.5",
     "hbs": "^4.0.0",
+    "helmet": "^3.4.0",
     "mongoose": "^4.5.5",
     "morgan": "^1.7.0",
     "passport": "^0.3.2",
-    "swig": "^1.4.2"
+    "passport-local": "^1.0.0",
+    "redis": "^2.6.5",
+    "superagent": "https://registry.npmjs.org/superagent/-/superagent-2.1.0.tgz",
+    "swig": "^1.4.2",
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
