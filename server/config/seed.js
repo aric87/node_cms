@@ -1,52 +1,30 @@
 "use strict"
-var Models = require('../models/models');
+const { Client, User} = require('../models/models');
 
 exports.run = (callback, errback) => {
-	Models.Client.create({
-		name: 'Test Client',
-		host:'localhost',
-	    address: '123 four street',
-	    city: 'NY',
-	    state: 'NY',
-	    phone: '1231231234',
-	    email: 'test@test.com',
-	    emailPassword: 'woohoo',
-	    heading: 'I want you to want me',
-	    subheading: 'Coyote ugly'
-		},
-        function(err, items) {
-            if (err) {
-                return errback(err);
-            }
-	Models.Insert.create({
-		content: 'test teset atohadf;nadlkadfgldf;lksdfg;lsfdg;l',
-		page: 'index',
-		active: true,
-		client: items.id
-	},{
-		content: 'test adfgj tesetosjg;lk contetdcttaf adfgldf;lksdfg;lsfdg;l',
-		page: 'contact',
-		active: true,
-		client: items.id
-	},function(err){
-		if (err){
-			return errback(err);
-		}
-	});
-	const pw =  Models.User.generateHash('testpassword');
-	Models.User.create({
-	name: 'test_user',	
-	email: 'testuser@test.com',
-	password: pw,
-	client: items.id
-
-	},function(err){
-		if (err){
-			return errback(err)
-		}
-        callback();	
+	Client.create( {
+		name: 'Tester',
+		url: 'tester.com',
+		clientCode: 'tester',
+		description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+		analyticsCode: '<script>console.log("shenanigangs")</script>',
+		facebook: '',
+		twitter: '',
+		youtube: '',
+		address: '',
+		city: '',
+		state: '',
+		phone: '',
+		email: '',
+		emailPassword: '',
+		users: [],
+		pages: [],
+	}, function(err){
+			if (err){
+				return errback()
+			}
+			return callback()
 	})
-	 });
 };
 
 if (require.main === module) {
