@@ -1,98 +1,90 @@
-var LocalStrategy = require('passport-local').Strategy;
-var User = require('../models/user');
+const LocalStrategy = require('passport-local').Strategy;
+const { User, Client } = require('../models/models');
 
-
-
-module.exports = function(passport) {
+module.exports = function initPassport(passport, logger) {
     // used to serialize the user for the session
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
-    });
-
+	passport.serializeUser((user, done) => done(null, user.id));
     // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);
-        });
-    });
-
-    passport.use('local-login', new LocalStrategy({
-            // by default, local strategy uses username and password, we will override with email
-            usernameField : 'email',
-            passwordField : 'password',
-            passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-        },
-        function(req, email, password, done) {
-            // asynchronous
-            process.nextTick(function() {
-                User.findOne({ 'email' :  email }, function(err, user) {
-                    // if there are any errors, return the error
-                    if (err)
-                        return done(err);
-
-                    // if no user is found, return the message
-                    if (!user)
-                        return done(null, false, req.flash('loginMessage', 'No user found.'));
-
-                    if (!user.validPassword(password))
-                        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
-
-                    // all is well, return user
-                    else
-                        return done(null, user);
-                });
-            });
-
-        }));
-
-
-    passport.use('local-signup', new LocalStrategy({
-            // by default, local strategy uses username and password, we will override with email
-            usernameField : 'email',
-            passwordField : 'password',
-            passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-        },
-        function(req, email, password, done) {
-
-            // asynchronous
-            process.nextTick(function() {
-
-                //  Whether we're signing up or connecting an account, we'll need
-                //  to know if the email address is in use.
-                User.findOne({'email': email}, function(err, existingUser) {
-                    // if there are any errors, return the error
-                    if (err)
-                        return done(err);
-
-                    // check to see if there's already a user with that email
-                    if (existingUser)
-                        return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-
-                    //  If we're logged in, we're connecting a new local account.
-                    if(req.user) {
-                        return done(null,req.user)
-                    }
-                    //  We're not logged in, so we're creating a brand new user.
-                    else {
-                        // create the user
-                        var newUser = new User();
-
-                        newUser.email    = email;
-                        newUser.password = newUser.generateHash(password);
-
-                        newUser.save(function(err) {
-                            if (err)
-                                throw err;
-
-                            return done(null, newUser);
-                        });
-                    }
-
-                });
-            });
-
-        }));
-
-
-
+	passport.deserializeUser((id, done) => {
+		User.findById(id, (err, user) => done(err, user));
+	});
+	passport.use('local-login', new LocalStrategy({
+		usernameField: 'email',
+		passwordField: 'password',
+		passReqToCallback: true,
+	},
+	(req, email, password, done) => {
+		Client.populate(req.client, {
+			path: 'users',
+			match: { email },
+			options: { limit: 1 },
+		}, (err, client) => {
+			const user = client.users[0];
+			if (err) {
+				logger.error(`Login error: ${err}, \n email: ${email}`);
+				return done(err);
+			}
+			// if no user is found, return the message
+			if (!user || !user.validPassword(password)) {
+				logger.warn(`Invalid login attempt. \n email: ${email}, \n pass: ${password}`);
+				return done(null, false, req.flash('loginMessage', 'Username or Password are incorrect'));
+			}
+			if (!user.active) {
+				logger.warn(`Inactive login attempt. \n email: ${email}`);
+				return done(null, false, req.flash('loginMessage', 'Your user account is inactive. Contact your system administrator to get it reactivated'));
+			}
+			if (user.role !== 'admin' && user.role !== 'member') {
+				logger.warn(`Invalid role attempt. \n email: ${email} role: ${user.role}`);
+				return done(null, false, req.flash('loginMessage', 'Your user account hasn\'t been enabled by an admin. Contact your system administrator.'));
+			}
+			logger.info(`${user.email} has logged in`);
+			return done(null, user);
+		});
+	}));
+	passport.use('local-signup', new LocalStrategy({
+		usernameField: 'email',
+		passwordField: 'password',
+		passReqToCallback: true,
+	},
+	(req, email, password, done) => {
+		Client.populate(req.client, {
+			path: 'users',
+			match: { email },
+			options: { limit: 1 },
+		}, (err, existingUser) => {
+			const newUser = new User();
+			if (err) {
+				logger.error(`Signup error: ${err} \n email: ${email}`);
+				return done(err);
+			}
+			if (existingUser) {
+				logger.warn(`Signup with existing email: \n email: ${email}`);
+				return done(null, false, req.flash('loginMessage', 'That email already has an account. Contact your system administrator if you think that\'s an error, or reset your password.'));
+			}
+			if (req.user) {
+				return done(null, req.user);
+			}
+			// create the user
+			newUser.email = email;
+			newUser.password = password;
+			newUser.name = req.body.name;
+			newUser.role = req.band.defaultStartRole;
+			newUser.save((saveUserErr) => {
+				if (saveUserErr) {
+					logger.error(`user create erro on signup: ${err}, \n email: ${email},`);
+					throw err;
+				}
+				req.client.users.push(newUser.id);
+				req.client.save((saveClientErr) => {
+					if (saveClientErr) {
+						logger.error(`error putting the user in the client ${req.client}, ${newUser.name}`);
+						return done(err);
+					}
+					logger.info(`new user created: ${newUser.name}, \n email: ${newUser.email},`);
+					return done(null, newUser);
+				});
+			});
+		});
+	})
+);
 };
